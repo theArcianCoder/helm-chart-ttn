@@ -1,0 +1,1399 @@
+{{- /*
+Generated from 'grafana-overview' from https://raw.githubusercontent.com/prometheus-operator/kube-prometheus/main/manifests/grafana-dashboardDefinitions.yaml
+Do not change in-place! In order to change this file first read following link:
+https://github.com/prometheus-community/helm-charts/tree/main/charts/kube-prometheus-stack/hack
+*/ -}}
+{{- $kubeTargetVersion := default .Capabilities.KubeVersion.GitVersion .Values.kubeTargetVersionOverride }}
+{{- if and (or .Values.grafana.enabled .Values.grafana.forceDeployDashboards) (semverCompare ">=1.14.0-0" $kubeTargetVersion) (semverCompare "<9.9.9-9" $kubeTargetVersion) .Values.grafana.defaultDashboardsEnabled }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  namespace: {{ template "kube-prometheus-stack-grafana.namespace" . }}
+  name: {{ printf "%s-%s" (include "kube-prometheus-stack.fullname" $) "alerting" | trunc 63 | trimSuffix "-" }}
+  annotations:
+{{ toYaml .Values.grafana.sidecar.dashboards.annotations | indent 4 }}
+  labels:
+    {{- if $.Values.grafana.sidecar.dashboards.label }}
+    {{ $.Values.grafana.sidecar.dashboards.label }}: {{ ternary $.Values.grafana.sidecar.dashboards.labelValue "1" (not (empty $.Values.grafana.sidecar.dashboards.labelValue)) | quote }}
+    {{- end }}
+    app: {{ template "kube-prometheus-stack.name" $ }}-grafana
+{{ include "kube-prometheus-stack.labels" $ | indent 4 }}
+data:
+  alerting.json: |-       
+      {
+        "annotations": {
+          "list": [
+            {
+              "builtIn": 1,
+              "datasource": {
+                "type": "grafana",
+                "uid": "-- Grafana --"
+              },
+              "enable": true,
+              "hide": true,
+              "iconColor": "rgba(0, 211, 255, 1)",
+              "name": "Annotations & Alerts",
+              "target": {
+                "limit": 100,
+                "matchAny": false,
+                "tags": [],
+                "type": "dashboard"
+              },
+              "type": "dashboard"
+            }
+          ]
+        },
+        "editable": true,
+        "fiscalYearStartMonth": 0,
+        "graphTooltip": 0,
+        "id": 13,
+        "links": [],
+        "liveNow": false,
+        "panels": [
+          {
+            "alert": {
+              "alertRuleTags": {},
+              "conditions": [
+                {
+                  "evaluator": {
+                    "params": [
+                      90
+                    ],
+                    "type": "gt"
+                  },
+                  "operator": {
+                    "type": "and"
+                  },
+                  "query": {
+                    "params": [
+                      "A",
+                      "5m",
+                      "now"
+                    ]
+                  },
+                  "reducer": {
+                    "params": [],
+                    "type": "avg"
+                  },
+                  "type": "query"
+                }
+              ],
+              "executionErrorState": "alerting",
+              "for": "1m",
+              "frequency": "30s",
+              "handler": 1,
+              "message": "🔴  Node Memory usage is above 90",
+              "name": "Node Memory usage Alert alert",
+              "noDataState": "no_data",
+              "notifications": []
+            },
+            "datasource": {
+              "type": "prometheus",
+              "uid": "prometheus"
+            },
+            "fieldConfig": {
+              "defaults": {
+                "color": {
+                  "mode": "palette-classic"
+                },
+                "custom": {
+                  "axisCenteredZero": false,
+                  "axisColorMode": "text",
+                  "axisLabel": "",
+                  "axisPlacement": "auto",
+                  "barAlignment": 0,
+                  "drawStyle": "line",
+                  "fillOpacity": 0,
+                  "gradientMode": "none",
+                  "hideFrom": {
+                    "legend": false,
+                    "tooltip": false,
+                    "viz": false
+                  },
+                  "lineInterpolation": "linear",
+                  "lineWidth": 1,
+                  "pointSize": 5,
+                  "scaleDistribution": {
+                    "type": "linear"
+                  },
+                  "showPoints": "auto",
+                  "spanNulls": false,
+                  "stacking": {
+                    "group": "A",
+                    "mode": "none"
+                  },
+                  "thresholdsStyle": {
+                    "mode": "off"
+                  }
+                },
+                "mappings": [],
+                "thresholds": {
+                  "mode": "absolute",
+                  "steps": [
+                    {
+                      "color": "green",
+                      "value": null
+                    },
+                    {
+                      "color": "red",
+                      "value": 80
+                    }
+                  ]
+                }
+              },
+              "overrides": [
+                {
+                  "__systemRef": "hideSeriesFrom",
+                  "matcher": {
+                    "id": "byNames",
+                    "options": {
+                      "mode": "exclude",
+                      "names": [
+                        "{app_kubernetes_io_component=\"metrics\", app_kubernetes_io_instance=\"node-exporter\", app_kubernetes_io_managed_by=\"Helm\", app_kubernetes_io_name=\"prometheus-node-exporter\", app_kubernetes_io_part_of=\"prometheus-node-exporter\", app_kubernetes_io_version=\"1.5.0\", container=\"node-exporter\", helm_sh_chart=\"prometheus-node-exporter-4.14.0\", instance=\"192.168.2.169:9100\", job=\"kubernetes-service-endpoints\", kubernetes_namespace=\"kube-system\", kubernetes_service=\"node-exporter-prometheus-node-exporter\", pod=\"node-exporter-prometheus-node-exporter-x2c6w\"}"
+                      ],
+                      "prefix": "All except:",
+                      "readOnly": true
+                    }
+                  },
+                  "properties": [
+                    {
+                      "id": "custom.hideFrom",
+                      "value": {
+                        "legend": false,
+                        "tooltip": false,
+                        "viz": false
+                      }
+                    }
+                  ]
+                }
+              ]
+            },
+            "gridPos": {
+              "h": 8,
+              "w": 12,
+              "x": 0,
+              "y": 0
+            },
+            "id": 22,
+            "options": {
+              "legend": {
+                "calcs": [
+                  "firstNotNull"
+                ],
+                "displayMode": "list",
+                "placement": "bottom",
+                "showLegend": true
+              },
+              "tooltip": {
+                "mode": "single",
+                "sort": "none"
+              }
+            },
+            "targets": [
+              {
+                "datasource": {
+                  "type": "prometheus",
+                  "uid": "prometheus"
+                },
+                "editorMode": "code",
+                "exemplar": false,
+                "expr": "(node_memory_MemFree_bytes / node_memory_MemTotal_bytes) * 100",
+                "instant": false,
+                "legendFormat": "{{`{{`}}instance{{`}}`}}",
+                "range": true,
+                "refId": "A"
+              }
+            ],
+            "thresholds": [
+              {
+                "colorMode": "critical",
+                "op": "gt",
+                "value": 90,
+                "visible": true
+              }
+            ],
+            "title": "Node Memory usage Alert",
+            "type": "timeseries"
+          },
+          {
+            "alert": {
+              "alertRuleTags": {},
+              "conditions": [
+                {
+                  "evaluator": {
+                    "params": [
+                      90
+                    ],
+                    "type": "gt"
+                  },
+                  "operator": {
+                    "type": "and"
+                  },
+                  "query": {
+                    "params": [
+                      "A",
+                      "5m",
+                      "now"
+                    ]
+                  },
+                  "reducer": {
+                    "params": [],
+                    "type": "avg"
+                  },
+                  "type": "query"
+                }
+              ],
+              "executionErrorState": "alerting",
+              "for": "5m",
+              "frequency": "1m",
+              "handler": 1,
+              "message": "🔴 Node Disk Size reached above 90",
+              "name": "Node Disk Size Alert alert",
+              "noDataState": "no_data",
+              "notifications": [
+                {
+                  "uid": "ZnTSTV-Vk"
+                }
+              ]
+            },
+            "datasource": {
+              "type": "prometheus",
+              "uid": "prometheus"
+            },
+            "fieldConfig": {
+              "defaults": {
+                "color": {
+                  "mode": "palette-classic"
+                },
+                "custom": {
+                  "axisCenteredZero": false,
+                  "axisColorMode": "text",
+                  "axisLabel": "",
+                  "axisPlacement": "auto",
+                  "barAlignment": 0,
+                  "drawStyle": "line",
+                  "fillOpacity": 0,
+                  "gradientMode": "none",
+                  "hideFrom": {
+                    "legend": false,
+                    "tooltip": false,
+                    "viz": false
+                  },
+                  "lineInterpolation": "linear",
+                  "lineWidth": 1,
+                  "pointSize": 5,
+                  "scaleDistribution": {
+                    "type": "linear"
+                  },
+                  "showPoints": "auto",
+                  "spanNulls": false,
+                  "stacking": {
+                    "group": "A",
+                    "mode": "none"
+                  },
+                  "thresholdsStyle": {
+                    "mode": "off"
+                  }
+                },
+                "mappings": [],
+                "thresholds": {
+                  "mode": "absolute",
+                  "steps": [
+                    {
+                      "color": "green",
+                      "value": null
+                    },
+                    {
+                      "color": "red",
+                      "value": 80
+                    }
+                  ]
+                }
+              },
+              "overrides": []
+            },
+            "gridPos": {
+              "h": 8,
+              "w": 12,
+              "x": 12,
+              "y": 0
+            },
+            "id": 18,
+            "options": {
+              "legend": {
+                "calcs": [],
+                "displayMode": "list",
+                "placement": "bottom",
+                "showLegend": true
+              },
+              "tooltip": {
+                "mode": "single",
+                "sort": "none"
+              }
+            },
+            "targets": [
+              {
+                "datasource": {
+                  "type": "prometheus",
+                  "uid": "prometheus"
+                },
+                "editorMode": "code",
+                "expr": "100 - (100 * ((node_filesystem_avail_bytes{mountpoint=\"/\",fstype!=\"rootfs\"} )  / (node_filesystem_size_bytes{mountpoint=\"/\",fstype!=\"rootfs\"}) ))\n",
+                "legendFormat": "{{`{{`}}instance{{`}}`}}",
+                "range": true,
+                "refId": "A"
+              }
+            ],
+            "thresholds": [
+              {
+                "colorMode": "critical",
+                "op": "gt",
+                "value": 90,
+                "visible": true
+              }
+            ],
+            "title": "Node Disk Size Alert",
+            "type": "timeseries"
+          },
+          {
+            "alert": {
+              "alertRuleTags": {},
+              "conditions": [
+                {
+                  "evaluator": {
+                    "params": [
+                      0.5
+                    ],
+                    "type": "gt"
+                  },
+                  "operator": {
+                    "type": "and"
+                  },
+                  "query": {
+                    "params": [
+                      "A",
+                      "5m",
+                      "now"
+                    ]
+                  },
+                  "reducer": {
+                    "params": [],
+                    "type": "avg"
+                  },
+                  "type": "query"
+                }
+              ],
+              "executionErrorState": "alerting",
+              "for": "2m",
+              "frequency": "1m",
+              "handler": 1,
+              "message": "⚠️  Pod Status | Restart",
+              "name": "Pod Status (Restart) alert",
+              "noDataState": "no_data",
+              "notifications": [
+                {
+                  "uid": "ZnTSTV-Vk"
+                }
+              ]
+            },
+            "datasource": {
+              "type": "prometheus",
+              "uid": "prometheus"
+            },
+            "fieldConfig": {
+              "defaults": {
+                "color": {
+                  "mode": "palette-classic"
+                },
+                "custom": {
+                  "axisCenteredZero": false,
+                  "axisColorMode": "text",
+                  "axisLabel": "",
+                  "axisPlacement": "auto",
+                  "barAlignment": 0,
+                  "drawStyle": "line",
+                  "fillOpacity": 0,
+                  "gradientMode": "none",
+                  "hideFrom": {
+                    "legend": false,
+                    "tooltip": false,
+                    "viz": false
+                  },
+                  "lineInterpolation": "linear",
+                  "lineWidth": 1,
+                  "pointSize": 5,
+                  "scaleDistribution": {
+                    "type": "linear"
+                  },
+                  "showPoints": "auto",
+                  "spanNulls": false,
+                  "stacking": {
+                    "group": "A",
+                    "mode": "none"
+                  },
+                  "thresholdsStyle": {
+                    "mode": "off"
+                  }
+                },
+                "mappings": [],
+                "thresholds": {
+                  "mode": "absolute",
+                  "steps": [
+                    {
+                      "color": "green",
+                      "value": null
+                    },
+                    {
+                      "color": "red",
+                      "value": 80
+                    }
+                  ]
+                }
+              },
+              "overrides": []
+            },
+            "gridPos": {
+              "h": 8,
+              "w": 12,
+              "x": 0,
+              "y": 8
+            },
+            "id": 8,
+            "options": {
+              "legend": {
+                "calcs": [],
+                "displayMode": "list",
+                "placement": "bottom",
+                "showLegend": true
+              },
+              "tooltip": {
+                "mode": "single",
+                "sort": "none"
+              }
+            },
+            "targets": [
+              {
+                "datasource": {
+                  "type": "prometheus",
+                  "uid": "prometheus"
+                },
+                "editorMode": "code",
+                "expr": "(sum(increase(kube_pod_container_status_restarts_total[5m])) by (exported_pod))",
+                "legendFormat": "{{`{{`}}exported_pod{{`}}`}}",
+                "range": true,
+                "refId": "A"
+              }
+            ],
+            "thresholds": [
+              {
+                "colorMode": "critical",
+                "op": "gt",
+                "value": 0.5,
+                "visible": true
+              }
+            ],
+            "title": "Pod Status (Restart)",
+            "type": "timeseries"
+          },
+          {
+            "alert": {
+              "alertRuleTags": {},
+              "conditions": [
+                {
+                  "evaluator": {
+                    "params": [
+                      95
+                    ],
+                    "type": "gt"
+                  },
+                  "operator": {
+                    "type": "and"
+                  },
+                  "query": {
+                    "params": [
+                      "A",
+                      "5m",
+                      "now"
+                    ]
+                  },
+                  "reducer": {
+                    "params": [],
+                    "type": "avg"
+                  },
+                  "type": "query"
+                }
+              ],
+              "executionErrorState": "alerting",
+              "for": "2m",
+              "frequency": "1m",
+              "handler": 1,
+              "message": "⚠️ HPA Max Pod Reached",
+              "name": "Max Pod Reached Alert",
+              "noDataState": "no_data",
+              "notifications": [
+                {
+                  "uid": "ZnTSTV-Vk"
+                }
+              ]
+            },
+            "datasource": {
+              "type": "prometheus",
+              "uid": "prometheus"
+            },
+            "fieldConfig": {
+              "defaults": {
+                "color": {
+                  "mode": "palette-classic"
+                },
+                "custom": {
+                  "axisCenteredZero": false,
+                  "axisColorMode": "text",
+                  "axisLabel": "",
+                  "axisPlacement": "auto",
+                  "barAlignment": 0,
+                  "drawStyle": "line",
+                  "fillOpacity": 0,
+                  "gradientMode": "none",
+                  "hideFrom": {
+                    "legend": false,
+                    "tooltip": false,
+                    "viz": false
+                  },
+                  "lineInterpolation": "linear",
+                  "lineWidth": 1,
+                  "pointSize": 5,
+                  "scaleDistribution": {
+                    "type": "linear"
+                  },
+                  "showPoints": "auto",
+                  "spanNulls": false,
+                  "stacking": {
+                    "group": "A",
+                    "mode": "none"
+                  },
+                  "thresholdsStyle": {
+                    "mode": "off"
+                  }
+                },
+                "mappings": [],
+                "noValue": "0",
+                "thresholds": {
+                  "mode": "absolute",
+                  "steps": [
+                    {
+                      "color": "green",
+                      "value": null
+                    },
+                    {
+                      "color": "red",
+                      "value": 80
+                    }
+                  ]
+                }
+              },
+              "overrides": []
+            },
+            "gridPos": {
+              "h": 8,
+              "w": 12,
+              "x": 12,
+              "y": 8
+            },
+            "id": 20,
+            "options": {
+              "legend": {
+                "calcs": [],
+                "displayMode": "list",
+                "placement": "bottom",
+                "showLegend": true
+              },
+              "tooltip": {
+                "mode": "single",
+                "sort": "none"
+              }
+            },
+            "targets": [
+              {
+                "datasource": {
+                  "type": "prometheus",
+                  "uid": "prometheus"
+                },
+                "editorMode": "code",
+                "expr": "kube_{{`{{`}}horizontalpodautoscaler{{`}}`}}_status_current_replicas / kube_{{`{{`}}horizontalpodautoscaler{{`}}`}}_spec_max_replicas * 100 ",
+                "legendFormat": "{{`{{`}}horizontalpodautoscaler{{`}}`}}",
+                "range": true,
+                "refId": "A"
+              }
+            ],
+            "thresholds": [
+              {
+                "colorMode": "critical",
+                "op": "gt",
+                "value": 95,
+                "visible": true
+              }
+            ],
+            "title": "HPA Max Pod Reached Alert",
+            "type": "timeseries"
+          },
+          {
+            "alert": {
+              "alertRuleTags": {},
+              "conditions": [
+                {
+                  "evaluator": {
+                    "params": [
+                      0
+                    ],
+                    "type": "gt"
+                  },
+                  "operator": {
+                    "type": "and"
+                  },
+                  "query": {
+                    "params": [
+                      "A",
+                      "5m",
+                      "now"
+                    ]
+                  },
+                  "reducer": {
+                    "params": [],
+                    "type": "avg"
+                  },
+                  "type": "query"
+                }
+              ],
+              "executionErrorState": "alerting",
+              "for": "2m",
+              "frequency": "1m",
+              "handler": 1,
+              "message": "🔴 Pod Status |  CrashLoopBackOff",
+              "name": "Pod Status (CrashLoopBackOff)",
+              "noDataState": "ok",
+              "notifications": [
+                {
+                  "uid": "ZnTSTV-Vk"
+                }
+              ]
+            },
+            "datasource": {
+              "type": "prometheus",
+              "uid": "prometheus"
+            },
+            "fieldConfig": {
+              "defaults": {
+                "color": {
+                  "mode": "palette-classic"
+                },
+                "custom": {
+                  "axisCenteredZero": false,
+                  "axisColorMode": "text",
+                  "axisLabel": "",
+                  "axisPlacement": "auto",
+                  "barAlignment": 0,
+                  "drawStyle": "line",
+                  "fillOpacity": 0,
+                  "gradientMode": "none",
+                  "hideFrom": {
+                    "legend": false,
+                    "tooltip": false,
+                    "viz": false
+                  },
+                  "lineInterpolation": "linear",
+                  "lineWidth": 1,
+                  "pointSize": 5,
+                  "scaleDistribution": {
+                    "type": "linear"
+                  },
+                  "showPoints": "auto",
+                  "spanNulls": false,
+                  "stacking": {
+                    "group": "A",
+                    "mode": "none"
+                  },
+                  "thresholdsStyle": {
+                    "mode": "off"
+                  }
+                },
+                "mappings": [],
+                "noValue": "0",
+                "thresholds": {
+                  "mode": "absolute",
+                  "steps": [
+                    {
+                      "color": "green",
+                      "value": null
+                    },
+                    {
+                      "color": "red",
+                      "value": 80
+                    }
+                  ]
+                }
+              },
+              "overrides": []
+            },
+            "gridPos": {
+              "h": 8,
+              "w": 12,
+              "x": 0,
+              "y": 16
+            },
+            "id": 2,
+            "options": {
+              "legend": {
+                "calcs": [],
+                "displayMode": "list",
+                "placement": "bottom",
+                "showLegend": true
+              },
+              "tooltip": {
+                "mode": "single",
+                "sort": "none"
+              }
+            },
+            "targets": [
+              {
+                "datasource": {
+                  "type": "prometheus",
+                  "uid": "prometheus"
+                },
+                "editorMode": "code",
+                "expr": "count(kube_pod_container_status_waiting_reason{reason=\"CrashLoopBackOff\"} == 1) by (exported_pod)",
+                "legendFormat": "{{`{{`}}exported_pod{{`}}`}}",
+                "range": true,
+                "refId": "A"
+              }
+            ],
+            "thresholds": [
+              {
+                "colorMode": "critical",
+                "op": "gt",
+                "value": 0,
+                "visible": true
+              }
+            ],
+            "title": "Pod Status (CrashLoopBackOff)",
+            "type": "timeseries"
+          },
+          {
+            "alert": {
+              "alertRuleTags": {},
+              "conditions": [
+                {
+                  "evaluator": {
+                    "params": [
+                      0
+                    ],
+                    "type": "gt"
+                  },
+                  "operator": {
+                    "type": "and"
+                  },
+                  "query": {
+                    "params": [
+                      "A",
+                      "5m",
+                      "now"
+                    ]
+                  },
+                  "reducer": {
+                    "params": [],
+                    "type": "avg"
+                  },
+                  "type": "query"
+                }
+              ],
+              "executionErrorState": "alerting",
+              "for": "5m",
+              "frequency": "1m",
+              "handler": 1,
+              "message": "⚠️ Pod Status | Pending",
+              "name": "Pod State (Pending) alert",
+              "noDataState": "ok",
+              "notifications": []
+            },
+            "datasource": {
+              "type": "prometheus",
+              "uid": "prometheus"
+            },
+            "fieldConfig": {
+              "defaults": {
+                "color": {
+                  "mode": "palette-classic"
+                },
+                "custom": {
+                  "axisCenteredZero": false,
+                  "axisColorMode": "text",
+                  "axisLabel": "",
+                  "axisPlacement": "auto",
+                  "barAlignment": 0,
+                  "drawStyle": "line",
+                  "fillOpacity": 0,
+                  "gradientMode": "none",
+                  "hideFrom": {
+                    "legend": false,
+                    "tooltip": false,
+                    "viz": false
+                  },
+                  "lineInterpolation": "linear",
+                  "lineWidth": 1,
+                  "pointSize": 5,
+                  "scaleDistribution": {
+                    "type": "linear"
+                  },
+                  "showPoints": "auto",
+                  "spanNulls": false,
+                  "stacking": {
+                    "group": "A",
+                    "mode": "none"
+                  },
+                  "thresholdsStyle": {
+                    "mode": "off"
+                  }
+                },
+                "mappings": [],
+                "thresholds": {
+                  "mode": "absolute",
+                  "steps": [
+                    {
+                      "color": "green",
+                      "value": null
+                    },
+                    {
+                      "color": "red",
+                      "value": 80
+                    }
+                  ]
+                }
+              },
+              "overrides": []
+            },
+            "gridPos": {
+              "h": 8,
+              "w": 12,
+              "x": 12,
+              "y": 16
+            },
+            "id": 14,
+            "options": {
+              "legend": {
+                "calcs": [],
+                "displayMode": "list",
+                "placement": "bottom",
+                "showLegend": true
+              },
+              "tooltip": {
+                "mode": "single",
+                "sort": "none"
+              }
+            },
+            "targets": [
+              {
+                "datasource": {
+                  "type": "prometheus",
+                  "uid": "prometheus"
+                },
+                "editorMode": "code",
+                "expr": "count(kube_pod_status_phase{ phase=\"Pending\"} == 1) by (exported_pod)",
+                "legendFormat": "{{`{{`}}exported_pod{{`}}`}}",
+                "range": true,
+                "refId": "A"
+              }
+            ],
+            "thresholds": [
+              {
+                "colorMode": "critical",
+                "op": "gt",
+                "value": 0,
+                "visible": true
+              }
+            ],
+            "title": "Pod State (Pending)",
+            "type": "timeseries"
+          },
+          {
+            "alert": {
+              "alertRuleTags": {},
+              "conditions": [
+                {
+                  "evaluator": {
+                    "params": [
+                      0
+                    ],
+                    "type": "gt"
+                  },
+                  "operator": {
+                    "type": "and"
+                  },
+                  "query": {
+                    "params": [
+                      "A",
+                      "5m",
+                      "now"
+                    ]
+                  },
+                  "reducer": {
+                    "params": [],
+                    "type": "avg"
+                  },
+                  "type": "query"
+                }
+              ],
+              "executionErrorState": "alerting",
+              "for": "3m",
+              "frequency": "1m",
+              "handler": 1,
+              "message": "🔴 Pod  status| ErrImagePull",
+              "name": "Pod Status (ErrImagePull) alert",
+              "noDataState": "ok",
+              "notifications": []
+            },
+            "datasource": {
+              "type": "prometheus",
+              "uid": "prometheus"
+            },
+            "fieldConfig": {
+              "defaults": {
+                "color": {
+                  "mode": "palette-classic"
+                },
+                "custom": {
+                  "axisCenteredZero": false,
+                  "axisColorMode": "text",
+                  "axisLabel": "",
+                  "axisPlacement": "auto",
+                  "barAlignment": 0,
+                  "drawStyle": "line",
+                  "fillOpacity": 0,
+                  "gradientMode": "none",
+                  "hideFrom": {
+                    "legend": false,
+                    "tooltip": false,
+                    "viz": false
+                  },
+                  "lineInterpolation": "linear",
+                  "lineWidth": 1,
+                  "pointSize": 5,
+                  "scaleDistribution": {
+                    "type": "linear"
+                  },
+                  "showPoints": "auto",
+                  "spanNulls": false,
+                  "stacking": {
+                    "group": "A",
+                    "mode": "none"
+                  },
+                  "thresholdsStyle": {
+                    "mode": "off"
+                  }
+                },
+                "mappings": [],
+                "noValue": "0",
+                "thresholds": {
+                  "mode": "absolute",
+                  "steps": [
+                    {
+                      "color": "green",
+                      "value": null
+                    },
+                    {
+                      "color": "red",
+                      "value": 80
+                    }
+                  ]
+                }
+              },
+              "overrides": [
+                {
+                  "__systemRef": "hideSeriesFrom",
+                  "matcher": {
+                    "id": "byNames",
+                    "options": {
+                      "mode": "exclude",
+                      "names": [
+                        "{pod=\"monitor-kube-state-metrics-67b896c86c-8k62z\"}"
+                      ],
+                      "prefix": "All except:",
+                      "readOnly": true
+                    }
+                  },
+                  "properties": [
+                    {
+                      "id": "custom.hideFrom",
+                      "value": {
+                        "legend": false,
+                        "tooltip": false,
+                        "viz": true
+                      }
+                    }
+                  ]
+                }
+              ]
+            },
+            "gridPos": {
+              "h": 8,
+              "w": 12,
+              "x": 0,
+              "y": 24
+            },
+            "id": 16,
+            "options": {
+              "legend": {
+                "calcs": [],
+                "displayMode": "list",
+                "placement": "bottom",
+                "showLegend": true
+              },
+              "tooltip": {
+                "mode": "single",
+                "sort": "none"
+              }
+            },
+            "targets": [
+              {
+                "datasource": {
+                  "type": "prometheus",
+                  "uid": "prometheus"
+                },
+                "editorMode": "code",
+                "expr": "count(kube_pod_container_status_waiting_reason{reason=\"ErrImagePull\"} == 1) by (exported_pod)",
+                "format": "time_series",
+                "legendFormat": "{{`{{`}}exported_pod{{`}}`}}",
+                "range": true,
+                "refId": "A"
+              }
+            ],
+            "thresholds": [
+              {
+                "colorMode": "critical",
+                "op": "gt",
+                "value": 0,
+                "visible": true
+              }
+            ],
+            "title": "Pod Status (ErrImagePull)",
+            "type": "timeseries"
+          },
+          {
+            "alert": {
+              "alertRuleTags": {},
+              "conditions": [
+                {
+                  "evaluator": {
+                    "params": [
+                      0
+                    ],
+                    "type": "gt"
+                  },
+                  "operator": {
+                    "type": "and"
+                  },
+                  "query": {
+                    "params": [
+                      "A",
+                      "5m",
+                      "now"
+                    ]
+                  },
+                  "reducer": {
+                    "params": [],
+                    "type": "avg"
+                  },
+                  "type": "query"
+                }
+              ],
+              "executionErrorState": "alerting",
+              "for": "40s",
+              "frequency": "10s",
+              "handler": 1,
+              "message": "Notification for Pod \"ImagePullBackOff\" status.\nPlease take a look!",
+              "name": "Pod Status (ImagePullBackOff) alert",
+              "noDataState": "ok",
+              "notifications": [
+                {
+                  "uid": "ZnTSTV-Vk"
+                }
+              ]
+            },
+            "datasource": {
+              "type": "prometheus",
+              "uid": "prometheus"
+            },
+            "fieldConfig": {
+              "defaults": {
+                "color": {
+                  "mode": "palette-classic"
+                },
+                "custom": {
+                  "axisCenteredZero": false,
+                  "axisColorMode": "text",
+                  "axisLabel": "",
+                  "axisPlacement": "auto",
+                  "barAlignment": 0,
+                  "drawStyle": "line",
+                  "fillOpacity": 0,
+                  "gradientMode": "none",
+                  "hideFrom": {
+                    "legend": false,
+                    "tooltip": false,
+                    "viz": false
+                  },
+                  "lineInterpolation": "linear",
+                  "lineWidth": 1,
+                  "pointSize": 5,
+                  "scaleDistribution": {
+                    "type": "linear"
+                  },
+                  "showPoints": "auto",
+                  "spanNulls": false,
+                  "stacking": {
+                    "group": "A",
+                    "mode": "none"
+                  },
+                  "thresholdsStyle": {
+                    "mode": "off"
+                  }
+                },
+                "mappings": [],
+                "noValue": "0",
+                "thresholds": {
+                  "mode": "absolute",
+                  "steps": [
+                    {
+                      "color": "green",
+                      "value": null
+                    },
+                    {
+                      "color": "red",
+                      "value": 80
+                    }
+                  ]
+                }
+              },
+              "overrides": []
+            },
+            "gridPos": {
+              "h": 8,
+              "w": 12,
+              "x": 12,
+              "y": 24
+            },
+            "id": 12,
+            "options": {
+              "legend": {
+                "calcs": [],
+                "displayMode": "list",
+                "placement": "bottom",
+                "showLegend": true
+              },
+              "tooltip": {
+                "mode": "single",
+                "sort": "none"
+              }
+            },
+            "targets": [
+              {
+                "datasource": {
+                  "type": "prometheus",
+                  "uid": "prometheus"
+                },
+                "editorMode": "code",
+                "expr": "count(kube_pod_container_status_waiting_reason{reason=\"ImagePullBackOff\"} == 1) by (exported_pod)",
+                "legendFormat": "{{`{{`}}exported_pod{{`}}`}}",
+                "range": true,
+                "refId": "A"
+              }
+            ],
+            "thresholds": [
+              {
+                "colorMode": "critical",
+                "op": "gt",
+                "value": 0,
+                "visible": true
+              }
+            ],
+            "title": "Pod Status (ImagePullBackOff)",
+            "type": "timeseries"
+          },
+          {
+            "alert": {
+              "alertRuleTags": {},
+              "conditions": [
+                {
+                  "evaluator": {
+                    "params": [
+                      0
+                    ],
+                    "type": "gt"
+                  },
+                  "operator": {
+                    "type": "and"
+                  },
+                  "query": {
+                    "params": [
+                      "A",
+                      "5m",
+                      "now"
+                    ]
+                  },
+                  "reducer": {
+                    "params": [],
+                    "type": "avg"
+                  },
+                  "type": "query"
+                }
+              ],
+              "executionErrorState": "alerting",
+              "for": "30s",
+              "frequency": "10s",
+              "handler": 1,
+              "message": "🔴 Pod status | Failed",
+              "name": "Pod Status (pod failed) alert",
+              "noDataState": "ok",
+              "notifications": [
+                {
+                  "uid": "ZnTSTV-Vk"
+                }
+              ]
+            },
+            "datasource": {
+              "type": "prometheus",
+              "uid": "prometheus"
+            },
+            "fieldConfig": {
+              "defaults": {
+                "color": {
+                  "mode": "palette-classic"
+                },
+                "custom": {
+                  "axisCenteredZero": false,
+                  "axisColorMode": "text",
+                  "axisLabel": "",
+                  "axisPlacement": "auto",
+                  "barAlignment": 0,
+                  "drawStyle": "line",
+                  "fillOpacity": 0,
+                  "gradientMode": "none",
+                  "hideFrom": {
+                    "legend": false,
+                    "tooltip": false,
+                    "viz": false
+                  },
+                  "lineInterpolation": "linear",
+                  "lineWidth": 1,
+                  "pointSize": 5,
+                  "scaleDistribution": {
+                    "type": "linear"
+                  },
+                  "showPoints": "auto",
+                  "spanNulls": false,
+                  "stacking": {
+                    "group": "A",
+                    "mode": "none"
+                  },
+                  "thresholdsStyle": {
+                    "mode": "off"
+                  }
+                },
+                "mappings": [],
+                "noValue": "0",
+                "thresholds": {
+                  "mode": "absolute",
+                  "steps": [
+                    {
+                      "color": "green",
+                      "value": null
+                    },
+                    {
+                      "color": "red",
+                      "value": 80
+                    }
+                  ]
+                }
+              },
+              "overrides": []
+            },
+            "gridPos": {
+              "h": 8,
+              "w": 12,
+              "x": 0,
+              "y": 32
+            },
+            "id": 10,
+            "options": {
+              "legend": {
+                "calcs": [],
+                "displayMode": "list",
+                "placement": "bottom",
+                "showLegend": true
+              },
+              "tooltip": {
+                "mode": "single",
+                "sort": "none"
+              }
+            },
+            "targets": [
+              {
+                "datasource": {
+                  "type": "prometheus",
+                  "uid": "prometheus"
+                },
+                "editorMode": "code",
+                "expr": "count(kube_pod_status_phase{phase=\"Failed\"}== 1) by (exported_pod)",
+                "legendFormat": "{{`{{`}}exported_pod{{`}}`}}",
+                "range": true,
+                "refId": "A"
+              }
+            ],
+            "thresholds": [
+              {
+                "colorMode": "critical",
+                "op": "gt",
+                "value": 0,
+                "visible": true
+              }
+            ],
+            "title": "Pod Failed",
+            "type": "timeseries"
+          }
+        ],
+        "refresh": "",
+        "schemaVersion": 38,
+        "style": "dark",
+        "tags": [],
+        "templating": {
+          "list": [
+            {
+              "current": {
+                "selected": false,
+                "text": "Prometheus",
+                "value": "Prometheus"
+              },
+              "hide": 0,
+              "includeAll": false,
+              "multi": false,
+              "name": "datasource",
+              "options": [],
+              "query": "prometheus",
+              "queryValue": "",
+              "refresh": 1,
+              "regex": "",
+              "skipUrlSync": false,
+              "type": "datasource"
+            }
+          ]
+        },
+        "time": {
+          "from": "now-6h",
+          "to": "now"
+        },
+        "timepicker": {},
+        "timezone": "",
+        "title": "Alerting - Pods/Nodes",
+        "uid": "_t4s_-bVz",
+        "version": 1,
+        "weekStart": ""
+      }
+{{- end}}
