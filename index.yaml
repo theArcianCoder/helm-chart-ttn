@@ -11,7 +11,7 @@ entries:
       artifacthub.io/operator: "true"
     apiVersion: v2
     appVersion: v0.66.0
-    created: "2023-08-28T16:28:19.338207091+05:30"
+    created: "2023-08-29T14:39:54.719311729+05:30"
     dependencies:
     - condition: crds.enabled
       name: crds
@@ -37,7 +37,7 @@ entries:
       and Prometheus rules combined with documentation and scripts to provide easy
       to operate end-to-end Kubernetes cluster monitoring with Prometheus using the
       Prometheus Operator.
-    digest: 8b2bdf0c6240a4c3aed7b1cf73857f62b7f5e67dd947da993038f45e855ccbe0
+    digest: 6dd97cc31defb3566736417546e4f8f114a35795e19207e196c6c4ed14695b1c
     home: https://github.com/prometheus-operator/kube-prometheus
     icon: https://raw.githubusercontent.com/prometheus/prometheus.github.io/master/assets/prometheus_logo-cb55bb5c346.png
     keywords:
@@ -68,4 +68,4 @@ entries:
     urls:
     - https://raw.githubusercontent.com/theArcianCoder/helm-chart-ttn/main/kube-prometheus-stack-48.6.0.tgz
     version: 48.6.0
-generated: "2023-08-28T16:28:19.307687942+05:30"
+generated: "2023-08-29T14:39:54.684143588+05:30"
