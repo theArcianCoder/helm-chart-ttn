@@ -3231,8 +3231,8 @@ prometheus:
     volumes:
     - name: cloud-storage
       persistentVolumeClaim:
-        claimName: kube-prometheus-stack-pvc
-        namespace: default
+        claimName: kps-pvc-sc
+  
 
     # Additional VolumeMounts on the output StatefulSet definition.
     volumeMounts:
