@@ -3178,10 +3178,11 @@ prometheus:
         requiredDuringSchedulingIgnoredDuringExecution:
           nodeSelectorTerms:
           - matchExpressions:
-            - key: kubernetes.io/e2e-az-name
+            - key: topology.kubernetes.io/zone  # Use the correct label key for AWS AZs.
               operator: In
               values:
-              - e2e-az1
+              - us-east-2b  # Specify the desired AZ here.
+
 
     ## The remote_read spec configuration for Prometheus.
     ## ref: https://github.com/prometheus-operator/prometheus-operator/blob/main/Documentation/api.md#remotereadspec
