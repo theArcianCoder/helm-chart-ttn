@@ -3256,7 +3256,9 @@ prometheus:
        scrape_interval: 5m
        scrape_timeout: 1m
        static_configs:
-        - targets: ['18.236.158.154:9216','18.236.158.154:9114']
+        - targets: 
+             - 127.0.0.1:9114
+             - 127.0.0.1:9126
     # - job_name: kube-etcd
     #   kubernetes_sd_configs:
     #     - role: node
