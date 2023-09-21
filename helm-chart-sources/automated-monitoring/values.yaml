@@ -873,7 +873,7 @@ grafana:
         claimName: kube-grafana-stack-pvc
 
   extraVolumeMounts: 
-    - name: grafana-storage
+    - name: grafana-storage-2
       mountPath: /var/lib/grafana
   ## ForceDeployDatasources Create datasource configmap even if grafana deployment has been disabled
   ##
