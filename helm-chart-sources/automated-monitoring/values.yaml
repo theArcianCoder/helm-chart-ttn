@@ -867,14 +867,16 @@ grafana:
               values:
               - us-east-2b 
 
-  extraContainerVolumes:
-    - name: grafana-storage
-      persistentVolumeClaim:
-        claimName: kube-grafana-stack-pvc
+  # extraContainerVolumes:
+  #   - name: grafana-storage
+  #     persistentVolumeClaim:
+  #       claimName: kube-grafana-stack-pvc
 
-  # extraVolumeMounts: 
-  #   - name: grafana-storage-2
-  #     mountPath: /var/lib/grafana
+  extraVolumeMounts: 
+    - name: grafana-storage
+      mountPath: /var/lib/grafana
+      readOnly: true
+      existingClaim: kube-grafana-stack-pvc
   ## ForceDeployDatasources Create datasource configmap even if grafana deployment has been disabled
   ##
   forceDeployDatasources: false
