@@ -857,6 +857,16 @@ grafana:
   enabled: true
   namespaceOverride: ""
 
+  affinity:
+      nodeAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+          nodeSelectorTerms:
+          - matchExpressions:
+            - key: topology.kubernetes.io/zone  # Use the correct label key for AWS AZs.
+              operator: In
+              values:
+              - us-east-2b 
+
   ## ForceDeployDatasources Create datasource configmap even if grafana deployment has been disabled
   ##
   forceDeployDatasources: false
