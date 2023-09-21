@@ -874,7 +874,7 @@ grafana:
 
   extraVolumeMounts: 
     - name: grafana-storage
-      mountPath: /var/lib/grafana
+      mountPath: /var/lib/grafana/
       readOnly: true
       existingClaim: kube-grafana-stack-pvc
   ## ForceDeployDatasources Create datasource configmap even if grafana deployment has been disabled
